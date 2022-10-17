@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProjectController;
+use App\Models\Project;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,3 +25,8 @@ Route::resource('projects', ProjectController::class)
 
 Route::get('/projects/{project:name}', [ProjectController::class, 'show'])
     ->name('projects.show');
+
+Route::get('/projects/search_by_custom_domain/{custom_domain?}', function (string $custom_domain = null) {
+    if (!$custom_domain) return [];
+    return Project::where(['custom_domain' => $custom_domain])->get();
+});
