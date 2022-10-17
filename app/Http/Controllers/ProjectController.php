@@ -35,7 +35,7 @@ class ProjectController extends Controller
         $validated = $request->validated();
 
         $project = Project::create();
-        $project->name = \Atrox\Haikunator::haikunate(["tokenLength" => 0]) . '-' . $project->id;
+        $project->name = \Atrox\Haikunator::haikunate(["tokenLength" => 0]) . '-' . $project->id . '.' . $request->getHost();
         $project->save();
 
         // ['example.com/index.html', 'example.com/images/logo.png', ...]

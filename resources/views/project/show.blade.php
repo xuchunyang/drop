@@ -8,6 +8,6 @@
     </p>
 
     <p>
-        {{ $project->url }}
+        {{ $project->name }}
     </p>
 </x-layout>
