@@ -4,8 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ccbd816a07b206f971042295b899d1ba",
+    "content-hash": "f21c13fcfa96f264d3a1d017eb2c457e",
     "packages": [
+        {
+            "name": "atrox/haikunator",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Atrox/haikunatorphp.git",
+                "reference": "98a70f9da1bddae439189a459b5cd0e655cbca23"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Atrox/haikunatorphp/zipball/98a70f9da1bddae439189a459b5cd0e655cbca23",
+                "reference": "98a70f9da1bddae439189a459b5cd0e655cbca23",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Atrox\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Atrox",
+                    "email": "hello@atrox.dev"
+                }
+            ],
+            "description": "Generate Heroku-like random names to use in your php applications.",
+            "support": {
+                "issues": "https://github.com/Atrox/haikunatorphp/issues",
+                "source": "https://github.com/Atrox/haikunatorphp/tree/v1.3.0"
+            },
+            "time": "2020-05-08T10:24:01+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.10.2",
