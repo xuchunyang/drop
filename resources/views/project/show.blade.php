@@ -12,7 +12,7 @@
         <tr>
             <td>{{ $project->id }}</td>
             <td>{{ $project->name }}</td>
-            <td><a href="{{ $project->name }}">{{ $project->name }}</a></td>
+            <td><a href="//{{ $project->name }}">{{ $project->name }}</a></td>
             <td>
                 @if($project->custom_domain)
                     <a href="//{{ $project->custom_domain }}">{{ $project->custom_domain }}</a>
