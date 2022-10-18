@@ -26,7 +26,7 @@ Route::resource('projects', ProjectController::class)
 Route::get('/check', function (Request $request) {
     $custom_domain = $request->get('domain');
     if ($project = Project::where(['custom_domain' => $custom_domain])->first()) {
-        if ($project->cname() === $custom_domain) {
+        if ($project->cname() === $project->name) {
             return response('', 200);
         }
     }
