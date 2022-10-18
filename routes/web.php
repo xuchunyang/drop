@@ -21,10 +21,7 @@ Route::get('/', function () {
 });
 
 Route::resource('projects', ProjectController::class)
-    ->only(['create', 'store']);
-
-Route::get('/projects/{project:name}', [ProjectController::class, 'show'])
-    ->name('projects.show');
+    ->only(['create', 'store', 'update', 'show']);
 
 Route::get('/projects/search_by_custom_domain/{custom_domain?}', function (string $custom_domain = null) {
     if (!$custom_domain) return [];

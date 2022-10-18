@@ -13,7 +13,7 @@ class UpdateProjectRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'custom_domain' => ['nullable', 'string', 'max:255', 'regex:/([0-9a-z-]\.){1,}[0-9a-z-]+/i'],
         ];
     }
 }

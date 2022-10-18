@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
+use Atrox\Haikunator;
+use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
+use Spatie\Dns\Dns;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -35,40 +39,48 @@ class ProjectController extends Controller
         $validated = $request->validated();
 
         $project = Project::create();
-        $project->name = \Atrox\Haikunator::haikunate(["tokenLength" => 0]) . '-' . $project->id . '.' . $request->getHost();
+        $project->name = Haikunator::haikunate(["tokenLength" => 0]) . '-' . $project->id . '.' . $request->getHost();
         $project->save();
 
         // ['example.com/index.html', 'example.com/images/logo.png', ...]
         $validated['paths'] = json_decode($validated['paths'], true);
         foreach ($validated['files'] as $i => $item) {
             // example.com/images/logo.png => images
-            $path = $project->name . '/' . \App\Helper::dirname($validated['paths'][$i]);
+            $path = $project->name . '/' . Helper::dirname($validated['paths'][$i]);
 
             /** @var UploadedFile $file */
             $file = $item;
             $file->storeAs($path, $file->getClientOriginalName(), 'public');
         }
 
-        return redirect(route('projects.show', ['project' => $project]));
+        return redirect(route('projects.show', ['project' => $project]))->with('success', '项目新建成功!');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\Project $project
+     * @param Project $project
      */
     public function show(Project $project)
     {
+        $cname = null;
+        if ($project->custom_domain) {
+            $dns = new Dns();
+            if ($records = $dns->getRecords($project->custom_domain, 'CNAME')) {
+                $cname = $records[0]->host();
+            }
+        }
         return view('project.show', [
             'project' => $project,
+            'cname' => $cname,
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \App\Models\Project $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function edit(Project $project)
     {
@@ -78,20 +90,21 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\UpdateProjectRequest $request
-     * @param \App\Models\Project $project
-     * @return \Illuminate\Http\Response
+     * @param UpdateProjectRequest $request
+     * @param Project $project
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        //
+        $validated = $request->validated();
+        $project->update($validated);
+        return back()->with('success', '更新成功！');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Project $project
-     * @return \Illuminate\Http\Response
+     * @param Project $project
+     * @return Response
      */
     public function destroy(Project $project)
     {
