@@ -5,7 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
-$url = sprintf("%s/projects/search_by_custom_domain/%s", $_ENV['APP_URL'], $_SERVER['X-Forwarded-Host']);
+$url = sprintf("%s/projects/search_by_custom_domain/%s", $_ENV['APP_URL'], $_SERVER['HTTP_X_FORWARDED_HOST']);
 
 $projects = json_decode(file_get_contents($url), true);
 
