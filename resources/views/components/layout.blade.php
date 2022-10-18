@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ? "$title | Drop" : 'Drop' }}</title>
+    <title>{{ $title ?? 'Drop - 静态网站托管，支持 HTTPS、自定义域名' }}</title>
     <style>
         body {
             line-height: 1.6;
@@ -19,13 +19,21 @@
         .error {
             color: red;
         }
+
+        code {
+            display: inline-block;
+            padding: 2px 10px;
+            background-color: #d2d2d2;
+            color: #000;
+            border-radius: 2px;
+        }
     </style>
 </head>
 <body>
 
-<nav>
-    <a href="/">Home</a>
-</nav>
+<p>
+    <a href="/">首页</a>
+</p>
 
 @if(session('success'))
     <p class="success">{{ session('success') }}</p>

@@ -1,10 +1,18 @@
-<x-layout title="Create Project">
-    @if($errors->any())
-        @foreach($errors->all() as $error)
-            <p>{{ $error }}</p>
-        @endforeach
-    @endif
-
+<x-layout>
+    <h1>静态网站托管</h1>
+    <p>
+        拖拽或者选择你的网站文件夹，点击【上传】，你的网站就上线了.
+    </p>
+    <ul>
+        <li>
+            我们会给你分配一个单独的域名，由于我们的域名使用了 Wildcard Certificate，所以生成的子域名自带 HTTPS；
+        </li>
+        <li>
+            随后你还可以绑定你自己的域名，利用 Caddy 的 <a
+                href="https://caddyserver.com/docs/automatic-https#on-demand-tls">On-Demand
+                TLS</a> 技术，我们会自动替代你申请 HTTPS 证书；
+        </li>
+    </ul>
     <form action="{{ route('projects.store') }}" method="post" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="paths" value="[]">
