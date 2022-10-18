@@ -30,3 +30,9 @@ Route::get('/projects/search_by_custom_domain/{custom_domain?}', function (strin
     if (!$custom_domain) return [];
     return Project::where(['custom_domain' => $custom_domain])->get();
 });
+
+// https://caddyserver.com/docs/caddyfile/options#on-demand-tls
+Route::get('/check', function (Request $request) {
+    $project = Project::where(['custom_domain' => $request->get('domain')])->exists();
+    return response('', $project ? 200 : 404);
+});
