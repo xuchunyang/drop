@@ -31,7 +31,7 @@ class Project extends Model
 
             if (!$records) return null;
 
-            return $records[0]->host();
+            return $records[0]->target();
         });
     }
 }

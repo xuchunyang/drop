@@ -10,6 +10,7 @@
             <p>查询不到 {{ $project->custom_domain }} 的 CNAME 记录，请确保你已经添加，如果你已经添加，请等待 DNS 生效！</p>
         @elseif(($cname !== $project->name))
             <p>{{ $project->custom_domain }} 的 CNAME 记录不匹配，请确保你 CNAME 设置正确，并且等待 DNS 缓存刷新！</p>
+            <p>目前查询的解析值为：{{ $cname }}.</p>
         @else
             <p>
                 自定义域名：
