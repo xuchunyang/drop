@@ -1,4 +1,4 @@
-# Drop - 静态网站一键托管
+# Drop - 静态网站一键部署
 
 拖拽上传静态网站，使用生成的子域名访问，可以选择绑定自己的域名，子域名和自定义域名都支持
 HTTPS。[Netlify Drop](https://app.netlify.com/drop) 替代品。
