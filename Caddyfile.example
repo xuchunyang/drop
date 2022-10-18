@@ -1,0 +1,44 @@
+{
+        debug
+
+        on_demand_tls {
+                ask https://drop.xuchunyang.cn/check
+                interval 2m
+                burst 5
+        }
+}
+
+drop.xuchunyang.cn {
+        root * /srv/drop/public
+
+        # 不执行用户上传的 PHP 文件
+        @storage not path /storage/*
+        php_fastcgi @storage unix//run/php/php-fpm.sock
+
+        file_server
+}
+
+*.drop.xuchunyang.cn {
+        tls {
+                dns dnspod {env.DNSPOD_TOKEN}
+        }
+        file_server browse {
+                root `/srv/drop/public/storage/{host}`
+        }
+}
+
+https:// {
+        tls {
+                on_demand
+        }
+
+        root * /srv/drop/public2
+        php_fastcgi unix//run/php/php-fpm.sock {
+                @accel header X-Accel-Redirect *
+                handle_response @accel {
+                        root    * /srv/drop/public/storage
+                        rewrite * {rp.header.X-Accel-Redirect}
+                        file_server
+                }
+        }
+}

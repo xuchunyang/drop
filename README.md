@@ -1,66 +1,109 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Drop - 静态网站一键托管
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+拖拽上传静态网站，使用生成的子域名访问，可以选择绑定自己的域名，子域名和自定义域名都支持
+HTTPS。[Netlify Drop](https://app.netlify.com/drop) 替代品。
 
-## About Laravel
+> 线上演示： https://drop.xuchunyang.cn
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+由 Laravel + Caddy 实现：
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- 利用 Caddy 的 [On-Demand TLS](https://caddyserver.com/docs/automatic-https#on-demand-tls) 技术，为客户自定义的域名，自动申请
+  HTTPS 证书
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 安装部署
 
-## Learning Laravel
+> 一个完整的 Caddy 配置：[./Caddyfile.example](./Caddyfile.example)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Drop 是一个简单的 Laravel 项目，需要提前了解 Laravel 项目部署。简单了解下 Caddy 也会很有帮组。
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+下面的例子中：
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- `drop.xuchunyang.cn` 为部署域名
+- `/srv/drop` 为项目位置
 
-## Laravel Sponsors
+### Laravel 主网站，如 `drop.xuchunyang.cn`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+这是我们的主网站，采用 Laravel + Caddy + php-fpm 标准的配置：
 
-### Premium Partners
+```
+drop.xuchunyang.cn {
+        root * /srv/drop/public
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+        # 不执行用户上传的 PHP 文件
+        @storage not path /storage/*
+        php_fastcgi @storage unix//run/php/php-fpm.sock
 
-## Contributing
+        file_server
+}
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Drop 把用户上传的静态网站，原封不动地保存到 /public/storage 中，用户可能会上传 PHP 脚本，为了安全，不能执行这些脚本。
 
-## Code of Conduct
+### 子域名, 如  `billowing-band-1.drop.xuchunyang.cn`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+用户上传的静态网站上传到 storage 后，会自动分配一个子域名，静态网站使用 `file_server` 指令：
 
-## Security Vulnerabilities
+```
+*.drop.xuchunyang.cn {
+        tls {
+                dns dnspod {env.DNSPOD_TOKEN}
+        }
+        file_server browse {
+                root `/srv/drop/public/storage/{host}`
+        }
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+[泛域名证书](https://caddyserver.com/docs/automatic-https#wildcard-certificates)的申请，比单域名的严格，需要用 API 设置
+DNS 解析，上面我使用了腾讯云 DNSPod 的 API。
 
-## License
+### 用户自定义域名，如 `landing.cadr.xyz`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+用户设置自定义域名，添加好 CNAME 解析：
+
+```
+$ host landing.cadr.xyz
+landing.cadr.xyz is an alias for billowing-band-1.drop.xuchunyang.cn
+```
+
+这是我们需要托管用户的自定义域名，比如
+
+    访问
+    https://landing.cadr.xyz/css/styles.css
+    应该返回：
+    /public/storage/billowing-band-1.drop.xuchunyang.cn/css/style.css
+
+这样的"转写"信息必须需要 PHP 代码读取数据库获得，而静态文件需要 Caddy 处理（考虑到性能，不用 PHP
+发送静态文件），利用 `X-Accel-Redirect` 完成这一过程：
+
+```
+https:// {
+        tls {
+                on_demand
+        }
+
+        root * /srv/drop/public2
+        php_fastcgi unix//run/php/php-fpm.sock {
+                @accel header X-Accel-Redirect *
+                handle_response @accel {
+                        root    * /srv/drop/public/storage
+                        rewrite * {rp.header.X-Accel-Redirect}
+                        file_server
+                }
+        }
+}
+```
+
+- `public2/index.php` 会读取 `.env` 中的 `APP_URL`，你要改成实际的，不能再用默认的 `APP_URL=http://localhost`
+
+开启 On-Demand TLS 后，所有的访问都会自动申请 HTTPS 证书，每一个证书需要 Let's Encrypt 单独一一批准，为了安全，我们只考虑确确实实在绑定了域名的用户：
+
+```
+{
+        on_demand_tls {
+                ask https://drop.xuchunyang.cn/check
+                interval 2m
+                burst 5
+        }
+}
+```

@@ -1,7 +1,7 @@
 <x-layout>
     <h1>静态网站托管</h1>
     <p>
-        拖拽或者选择你的网站文件夹，点击【上传】，你的网站就上线了.
+        拖拽或者选择你的网站文件夹，点击【上传】，你的网站就上线了，类似 <a href="https://app.netlify.com/drop">Netlify Drop</a>.
     </p>
     <ul>
         <li>
